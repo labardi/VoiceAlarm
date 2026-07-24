@@ -13,6 +13,8 @@ class MainActivity : AppCompatActivity() {
     // Переменная для движка распознавания (он слушает и переводит в текст)
     private var speechService: org.vosk.android.SpeechService? = null
 
+    private var accumulatedText = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,10 +51,26 @@ class MainActivity : AppCompatActivity() {
                     speechService?.stop()
                     speechService = null
                     recordButton.text = "Записать"
+
+                    if (accumulatedText != "") {
+                        val result = parseVoiceCommand(accumulatedText)
+                        println("День: ${result.alarmDay}")
+                        println("Месяц: ${result.alarmMonth}")
+                        println("Год: ${result.alarmYear}")
+                        println("Часы: ${result.alarmHour}")
+                        println("Минуты: ${result.alarmMinute}")
+                        println("Сообщение: ${result.message}")
+                        println("Ошибка: ${result.error}")
+
+                        accumulatedText = ""
+                    }
+
                 } else {
                     // Создаем новый распознаватель на основе нашей модели.
                     // 16000.0f — это частота дискретизации звука.
                     val recognizer = org.vosk.Recognizer(model, 16000.0f)
+
+                    accumulatedText = ""
 
                     // Запускаем службу записи (микрофон)
                     speechService = org.vosk.android.SpeechService(recognizer, 16000.0f)
@@ -62,13 +80,15 @@ class MainActivity : AppCompatActivity() {
                         override fun onPartialResult(hypothesis: String) {} // Игнорируем промежуточные догадки
 
                         override fun onResult(hypothesis: String) {
-                            // Vosk возвращает JSON, например: {"text": "привет"}
-                            // Для начала просто выведем сырой ответ на экран
-                            resultText.text = hypothesis
+                            accumulatedText += " "
+                            accumulatedText += org.json.JSONObject(hypothesis).getString("text")
+                            resultText.text = accumulatedText
                         }
 
                         override fun onFinalResult(hypothesis: String) {
-                            resultText.text = hypothesis
+                            accumulatedText += " "
+                            accumulatedText += org.json.JSONObject(hypothesis).getString("text")
+                            resultText.text = accumulatedText
                         }
 
                         override fun onError(exception: Exception) {
