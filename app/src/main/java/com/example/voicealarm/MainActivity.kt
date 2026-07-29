@@ -67,6 +67,11 @@ class MainActivity : AppCompatActivity() {
 
                     accumulatedText = ""
 
+                    editText.visibility = android.view.View.GONE
+                    editText.text = getString(R.string.editAccess)
+                    confirmButton.visibility = android.view.View.GONE
+                    resultText.isEnabled = false
+
                     // Запускаем службу записи (микрофон)
                     speechService = org.vosk.android.SpeechService(recognizer, 16000.0f)
 
@@ -100,23 +105,20 @@ class MainActivity : AppCompatActivity() {
 
         confirmButton.setOnClickListener {
             val finalText = resultText.text.toString()
-            if (finalText.isNotEmpty()) {
-                val result = parseVoiceCommand(finalText)
-                val day = result.alarmDay
-                val month = result.alarmMonth
-                val year = result.alarmYear
-                val hour = result.alarmHour
-                val minute = result.alarmMinute
-                val message = result.message
-                val error = result.error
-                println("День: $day")
-                println("Месяц: $month")
-                println("Год: $year")
-                println("Часы: $hour")
-                println("Минуты: $minute")
-                println("Сообщение: $message")
-                println("Ошибка: $error")
 
+            val result = parseVoiceCommand(finalText)
+            val day = result.alarmDay
+            val month = result.alarmMonth
+            val year = result.alarmYear
+            val hour = result.alarmHour
+            val minute = result.alarmMinute
+            val message = result.message
+            val error = result.error
+
+            if (error != "") {
+                editText.text = error
+                editText.visibility = android.view.View.VISIBLE
+            } else {
                 val intent = Intent(AlarmClock.ACTION_SET_ALARM).apply {
                     putExtra(AlarmClock.EXTRA_HOUR, hour)
                     putExtra(AlarmClock.EXTRA_MINUTES, minute)
@@ -124,13 +126,23 @@ class MainActivity : AppCompatActivity() {
                     putExtra(AlarmClock.EXTRA_SKIP_UI, true)
                 }
                 startActivity(intent)
+
+                editText.text = "Будильник на ${"%02d".format(hour)}:${"%02d".format(minute)} на ${
+                    "%02d".format(day)}.${"%02d".format(month)}.${"%02d".format(year)} с сообщением: $message поставлен!"
+                editText.visibility = android.view.View.VISIBLE
+                resultText.setText("Модель готова! Можно говорить.")
+                confirmButton.visibility = android.view.View.GONE
+                resultText.isEnabled = false
+                recordButton.text = getString(R.string.startRecording)
+
             }
 
-            accumulatedText = ""
-            confirmButton.visibility = android.view.View.GONE
-            editText.visibility = android.view.View.GONE
-            resultText.isEnabled = false
         }
+
+        accumulatedText = ""
+        confirmButton.visibility = android.view.View.GONE
+        editText.visibility = android.view.View.GONE
+        resultText.isEnabled = false
 
         // Распаковываем модель из папки assets
         org.vosk.android.StorageService.unpack(

@@ -94,7 +94,7 @@ fun parseVoiceCommand(text: String): ParsedCommand {
     )
 
 
-    var errorMessage = "Ошибок нет"
+    var errorMessage = ""
     var alarmMessage = ""
     var day = 0
     var hour = 0
@@ -114,9 +114,9 @@ fun parseVoiceCommand(text: String): ParsedCommand {
 
     val normalizedText = text.trim().lowercase()
 
-    if ("сообщен" in normalizedText && normalizedText.startsWith("напомни")) {
+    if ("сообщен" in normalizedText && normalizedText.startsWith("напомн")) {
         alarmMessage = normalizedText.substringAfter("сообщен").substringAfter(" ").trim()
-        val timeString = normalizedText.substringAfter("напомни").substringBefore("сообщен").trim() + " "
+        val timeString = normalizedText.substringAfter("напомн").substringAfter(" ").substringBefore("сообщен").trim() + " "
 
 
             var tempString = ""
