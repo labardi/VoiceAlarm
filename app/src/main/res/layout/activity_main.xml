@@ -7,26 +7,54 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
+    <EditText
         android:id="@+id/tvResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="Нажми кнопку и скажи напоминание"
+        android:text="@string/startMessage"
         android:textSize="18sp"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/btnRecord"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+
+        android:inputType="textMultiLine"
+        android:enabled="false"/>
 
     <Button
         android:id="@+id/btnRecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Записать"
+        android:text="@string/startRecording"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnConfirm"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/confirmText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnRecord"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        app:backgroundTint="#2E7D32"/>
+
+    <TextView
+        android:id="@+id/tvEdit"
+        android:text="@string/editAccess"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/tvResult"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="48dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

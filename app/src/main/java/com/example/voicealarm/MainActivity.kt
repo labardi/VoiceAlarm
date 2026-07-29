@@ -1,10 +1,12 @@
 package com.example.voicealarm
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import android.provider.AlarmClock
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,7 +30,9 @@ class MainActivity : AppCompatActivity() {
 
 
         val recordButton = findViewById<android.widget.Button>(R.id.btnRecord)
-        val resultText = findViewById<android.widget.TextView>(R.id.tvResult)
+        val confirmButton = findViewById<android.widget.Button>(R.id.btnConfirm)
+        val resultText = findViewById<android.widget.EditText>(R.id.tvResult)
+        val editText = findViewById<android.widget.TextView>(R.id.tvEdit)
 
         // Изначально выключим кнопку, пока модель не загрузится (в шаге 2 мы ее включим)
         recordButton.isEnabled = false
@@ -50,20 +54,11 @@ class MainActivity : AppCompatActivity() {
                 if (speechService != null) {
                     speechService?.stop()
                     speechService = null
-                    recordButton.text = "Записать"
+                    recordButton.text = "Перезаписать"
 
-                    if (accumulatedText != "") {
-                        val result = parseVoiceCommand(accumulatedText)
-                        println("День: ${result.alarmDay}")
-                        println("Месяц: ${result.alarmMonth}")
-                        println("Год: ${result.alarmYear}")
-                        println("Часы: ${result.alarmHour}")
-                        println("Минуты: ${result.alarmMinute}")
-                        println("Сообщение: ${result.message}")
-                        println("Ошибка: ${result.error}")
-
-                        accumulatedText = ""
-                    }
+                    resultText.isEnabled = true
+                    confirmButton.visibility = android.view.View.VISIBLE
+                    editText.visibility = android.view.View.VISIBLE
 
                 } else {
                     // Создаем новый распознаватель на основе нашей модели.
@@ -82,25 +77,59 @@ class MainActivity : AppCompatActivity() {
                         override fun onResult(hypothesis: String) {
                             accumulatedText += " "
                             accumulatedText += org.json.JSONObject(hypothesis).getString("text")
-                            resultText.text = accumulatedText
+                            resultText.setText(accumulatedText)
                         }
 
                         override fun onFinalResult(hypothesis: String) {
                             accumulatedText += " "
                             accumulatedText += org.json.JSONObject(hypothesis).getString("text")
-                            resultText.text = accumulatedText
+                            resultText.setText(accumulatedText)
                         }
 
                         override fun onError(exception: Exception) {
-                            resultText.text = "Ошибка микрофона"
+                            resultText.setText("Ошибка микрофона")
                         }
                         override fun onTimeout() {}
                     })
 
                     recordButton.text = "Остановить"
-                    resultText.text = "Слушаю..."
+                    resultText.setText("Слушаю...")
                 }
             }
+        }
+
+        confirmButton.setOnClickListener {
+            val finalText = resultText.text.toString()
+            if (finalText.isNotEmpty()) {
+                val result = parseVoiceCommand(finalText)
+                val day = result.alarmDay
+                val month = result.alarmMonth
+                val year = result.alarmYear
+                val hour = result.alarmHour
+                val minute = result.alarmMinute
+                val message = result.message
+                val error = result.error
+                println("День: $day")
+                println("Месяц: $month")
+                println("Год: $year")
+                println("Часы: $hour")
+                println("Минуты: $minute")
+                println("Сообщение: $message")
+                println("Ошибка: $error")
+
+                val intent = Intent(AlarmClock.ACTION_SET_ALARM).apply {
+                    putExtra(AlarmClock.EXTRA_HOUR, hour)
+                    putExtra(AlarmClock.EXTRA_MINUTES, minute)
+                    putExtra(AlarmClock.EXTRA_MESSAGE, message)
+                    putExtra(AlarmClock.EXTRA_SKIP_UI, true)
+                }
+                startActivity(intent)
+            }
+
+            accumulatedText = ""
+            confirmButton.visibility = android.view.View.GONE
+            editText.visibility = android.view.View.GONE
+            resultText.isEnabled = false
         }
 
         // Распаковываем модель из папки assets
@@ -111,12 +140,12 @@ class MainActivity : AppCompatActivity() {
             // Коллбэк для успеха (completeCallback)
             { model ->
                 this.model = model
-                resultText.text = "Модель готова! Можно говорить."
+                resultText.setText("Модель готова! Можно говорить.")
                 recordButton.isEnabled = true
             },
             // Коллбэк для ошибки (errorCallback)
             { exception ->
-                resultText.text = "Ошибка загрузки модели: ${exception.message}"
+                resultText.setText("Ошибка загрузки модели: ${exception.message}")
             }
         )
     }

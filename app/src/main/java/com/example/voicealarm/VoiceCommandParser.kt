@@ -112,10 +112,11 @@ fun parseVoiceCommand(text: String): ParsedCommand {
 
     var year = currentYear
 
+    val normalizedText = text.trim().lowercase()
 
-    if ("сообщен" in text && text.lowercase().startsWith("напомни")) {
-        alarmMessage = text.substringAfter("сообщен").substringAfter(" ").trim()
-            val timeString = text.substringAfter("напомни").substringBefore("сообщен").lowercase().trim() + " "
+    if ("сообщен" in normalizedText && normalizedText.startsWith("напомни")) {
+        alarmMessage = normalizedText.substringAfter("сообщен").substringAfter(" ").trim()
+        val timeString = normalizedText.substringAfter("напомни").substringBefore("сообщен").trim() + " "
 
 
             var tempString = ""

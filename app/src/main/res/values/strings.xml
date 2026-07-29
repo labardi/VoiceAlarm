@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">VoiceAlarm</string>
+    <string name="startMessage">Нажми кнопку и скажи напоминание</string>
+    <string name="startRecording">Записать</string>
+    <string name="confirmText">Все верно</string>
+    <string name="editAccess">При необходимости можете вручную отредактировать</string>
 </resources>
