@@ -48,13 +48,16 @@
         android:id="@+id/tvEdit"
         android:text="@string/editAccess"
         android:textSize="20sp"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/tvResult"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="48dp"/>
+        android:layout_marginBottom="48dp"
+        android:gravity="center"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

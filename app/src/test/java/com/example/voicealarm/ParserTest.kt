@@ -6,7 +6,7 @@ class ParserTest {
 
     @Test
     fun testParser() {
-        val testingString = "напомни тридцатого июля в четырнадцать часов девять минут сообщение позвонить доктору"
+        val testingString = "напомни тридцатого июля в шестнадцать часов сорок девять минут сообщение позвонить доктору"
 
         val result = parseVoiceCommand(testingString)
 

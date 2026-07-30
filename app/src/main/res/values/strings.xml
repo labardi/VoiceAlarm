@@ -4,4 +4,5 @@
     <string name="startRecording">Записать</string>
     <string name="confirmText">Все верно</string>
     <string name="editAccess">При необходимости можете вручную отредактировать</string>
+    <string name="DismissAlarm">Выключить будильник</string>
 </resources>
