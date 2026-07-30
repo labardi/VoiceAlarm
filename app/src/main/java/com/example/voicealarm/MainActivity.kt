@@ -1,12 +1,18 @@
 package com.example.voicealarm
 
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import android.provider.AlarmClock
+import android.app.AlarmManager
+import android.os.Build
+import android.provider.Settings
+import android.widget.Toast
+import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
 
@@ -119,24 +125,60 @@ class MainActivity : AppCompatActivity() {
                 editText.text = error
                 editText.visibility = android.view.View.VISIBLE
             } else {
-                val intent = Intent(AlarmClock.ACTION_SET_ALARM).apply {
-                    putExtra(AlarmClock.EXTRA_HOUR, hour)
-                    putExtra(AlarmClock.EXTRA_MINUTES, minute)
-                    putExtra(AlarmClock.EXTRA_MESSAGE, message)
-                    putExtra(AlarmClock.EXTRA_SKIP_UI, true)
+                val calendar = Calendar.getInstance().apply {
+                    set(Calendar.YEAR, year)
+                    set(Calendar.MONTH, month - 1) // ← важно! В Calendar январь = 0
+                    set(Calendar.DAY_OF_MONTH, day)
+                    set(Calendar.HOUR_OF_DAY, hour)
+                    set(Calendar.MINUTE, minute)
+                    set(Calendar.SECOND, 0)
                 }
-                startActivity(intent)
+                val triggerTimeMillis = calendar.timeInMillis
 
-                editText.text = "Будильник на ${"%02d".format(hour)}:${"%02d".format(minute)} на ${
-                    "%02d".format(day)}.${"%02d".format(month)}.${"%02d".format(year)} с сообщением: $message поставлен!"
-                editText.visibility = android.view.View.VISIBLE
-                resultText.setText("Модель готова! Можно говорить.")
-                confirmButton.visibility = android.view.View.GONE
-                resultText.isEnabled = false
-                recordButton.text = getString(R.string.startRecording)
+                val requestCode = triggerTimeMillis.toInt()
+                val intent = Intent(this, AlarmReceiver ::class.java)
+                val pendingIntent = PendingIntent.getBroadcast(this, requestCode, intent,
+                    PendingIntent.FLAG_IMMUTABLE)
 
+                val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (alarmManager.canScheduleExactAlarms()) {
+                        alarmManager.setAlarmClock(
+                            AlarmManager.AlarmClockInfo(triggerTimeMillis, pendingIntent),
+                            pendingIntent
+                        )
+                        editText.text = "Будильник на ${"%02d".format(hour)}:${"%02d".format(minute)} на ${
+                            "%02d".format(day)}.${"%02d".format(month)}.${"%02d".format(year)} с сообщением: $message поставлен!"
+                        editText.visibility = android.view.View.VISIBLE
+                        resultText.setText("Модель готова! Можно говорить.")
+                        confirmButton.visibility = android.view.View.GONE
+                        resultText.isEnabled = false
+                        recordButton.text = getString(R.string.startRecording)
+                    } else {
+                        // просим разрешение
+                        Toast.makeText(
+                            this,
+                            "Для точных будильников нужно разрешение",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                        startActivity(intent)
+                    }
+                } else {
+                    alarmManager.setAlarmClock(
+                        AlarmManager.AlarmClockInfo(triggerTimeMillis, pendingIntent),
+                        pendingIntent
+                    ) // на старых Android просто ставим
+                    editText.text = "Будильник на ${"%02d".format(hour)}:${"%02d".format(minute)} на ${
+                        "%02d".format(day)}.${"%02d".format(month)}.${"%02d".format(year)} с сообщением: $message поставлен!"
+                    editText.visibility = android.view.View.VISIBLE
+                    resultText.setText("Модель готова! Можно говорить.")
+                    confirmButton.visibility = android.view.View.GONE
+                    resultText.isEnabled = false
+                    recordButton.text = getString(R.string.startRecording)
+                }
             }
-
         }
 
         accumulatedText = ""
