@@ -11,13 +11,14 @@
         android:id="@+id/tvResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="150dp"
         android:text="@string/startMessage"
         android:textSize="18sp"
         android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/btnRecord"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
 
         android:inputType="textMultiLine"
         android:enabled="false"/>
@@ -26,23 +27,26 @@
         android:id="@+id/btnRecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="370dp"
         android:text="@string/startRecording"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnConfirm"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/tvResult" />
 
     <Button
         android:id="@+id/btnConfirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="370dp"
         android:text="@string/confirmText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnRecord"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvResult"
         android:visibility="gone"
-        app:backgroundTint="#2E7D32"/>
+        app:backgroundTint="#2E7D32"
+        />
 
     <TextView
         android:id="@+id/tvEdit"
@@ -59,5 +63,18 @@
         android:gravity="center"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"/>
+
+    <Button
+        android:id="@+id/btnAlarmsList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/AlarmListButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="760dp"
+        android:layout_marginEnd="250dp"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

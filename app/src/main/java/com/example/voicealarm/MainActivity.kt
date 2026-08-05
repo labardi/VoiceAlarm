@@ -17,6 +17,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.util.Calendar
 import android.Manifest
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,10 +29,13 @@ class MainActivity : AppCompatActivity() {
 
     private var accumulatedText = ""
 
+    private lateinit var db: AlarmDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        db = AlarmDatabase.getDatabase(this)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -41,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         val recordButton = findViewById<android.widget.Button>(R.id.btnRecord)
         val confirmButton = findViewById<android.widget.Button>(R.id.btnConfirm)
+        val alarmListButton = findViewById<android.widget.Button>(R.id.btnAlarmsList)
         val resultText = findViewById<android.widget.EditText>(R.id.tvResult)
         val editText = findViewById<android.widget.TextView>(R.id.tvEdit)
 
@@ -80,6 +86,7 @@ class MainActivity : AppCompatActivity() {
                     recordButton.text = "Перезаписать"
 
                     resultText.isEnabled = true
+                    alarmListButton.isEnabled = true
                     confirmButton.visibility = android.view.View.VISIBLE
                     editText.visibility = android.view.View.VISIBLE
 
@@ -94,6 +101,7 @@ class MainActivity : AppCompatActivity() {
                     editText.text = getString(R.string.editAccess)
                     confirmButton.visibility = android.view.View.GONE
                     resultText.isEnabled = false
+                    alarmListButton.isEnabled = false
 
                     // Запускаем службу записи (микрофон)
                     speechService = org.vosk.android.SpeechService(recognizer, 16000.0f)
@@ -124,6 +132,11 @@ class MainActivity : AppCompatActivity() {
                     resultText.setText("Слушаю...")
                 }
             }
+        }
+
+        alarmListButton.setOnClickListener {
+            val intent = Intent(this, AlarmListActivity::class.java)
+            startActivity(intent)
         }
 
         confirmButton.setOnClickListener {
@@ -198,6 +211,12 @@ class MainActivity : AppCompatActivity() {
                         confirmButton.visibility = android.view.View.GONE
                         resultText.isEnabled = false
                         recordButton.text = getString(R.string.startRecording)
+
+                        lifecycleScope.launch {
+                            db.alarmDao().addAlarm(
+                                AlarmEntity(requestCode, hour, minute, day, month, year, message)
+                            )
+                        }
                     } else {
                         // просим разрешение
                         Toast.makeText(
@@ -220,6 +239,12 @@ class MainActivity : AppCompatActivity() {
                     confirmButton.visibility = android.view.View.GONE
                     resultText.isEnabled = false
                     recordButton.text = getString(R.string.startRecording)
+
+                    lifecycleScope.launch {
+                        db.alarmDao().addAlarm(
+                            AlarmEntity(requestCode, hour, minute, day, month, year, message)
+                        )
+                    }
                 }
             }
         }
