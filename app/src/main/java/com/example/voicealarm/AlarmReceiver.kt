@@ -31,8 +31,8 @@ class AlarmReceiver : BroadcastReceiver() {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             // сюда передаём extras из входящего intent
             putExtra("message", intent.getStringExtra("message"))
-            putExtra("hour", intent.getIntExtra("hour", 0))
             putExtra("minute", intent.getIntExtra("minute", 0))
+            putExtra("hour", intent.getIntExtra("hour", 0))
             putExtra("day", intent.getIntExtra("day", 0))
             putExtra("month", intent.getIntExtra("month", 0))
             putExtra("year", intent.getIntExtra("year", 0))
@@ -55,8 +55,8 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val alarmIntent = Intent(context, AlarmActivity::class.java).apply {
             putExtra("message", intent.getStringExtra("message"))
-            putExtra("hour", intent.getIntExtra("hour", 0))
             putExtra("minute", intent.getIntExtra("minute", 0))
+            putExtra("hour", intent.getIntExtra("hour", 0))
             putExtra("day", intent.getIntExtra("day", 0))
             putExtra("month", intent.getIntExtra("month", 0))
             putExtra("year", intent.getIntExtra("year", 0))

@@ -7,4 +7,27 @@
     android:layout_height="match_parent"
     tools:context=".AlarmListActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="80dp"/>
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="64dp"
+        android:layout_height="48dp"
+        android:src="@drawable/arrow_back_white"
+        android:backgroundTint="#8B00FF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/alarm_list_back_button"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

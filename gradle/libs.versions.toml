@@ -10,6 +10,7 @@ activityKtx = "1.8.0"
 constraintlayout = "2.1.4"
 room = "2.7.2"
 ksp = "2.1.21-2.0.1"
+recyclerView = "1.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -23,6 +24,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerView" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

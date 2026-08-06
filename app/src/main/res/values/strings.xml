@@ -6,4 +6,5 @@
     <string name="editAccess">При необходимости можете вручную отредактировать</string>
     <string name="DismissAlarm">Выключить будильник</string>
     <string name="AlarmListButton">Будильники</string>
+    <string name="alarm_list_back_button">Назад</string>
 </resources>

@@ -186,8 +186,8 @@ class MainActivity : AppCompatActivity() {
                 val requestCode = triggerTimeMillis.toInt()
                 val intent = Intent(this, AlarmReceiver ::class.java).apply {
                     putExtra("message", message)
-                    putExtra("hour", hour)
                     putExtra("minute", minute)
+                    putExtra("hour", hour)
                     putExtra("day", day)
                     putExtra("month", month)
                     putExtra("year", year)
@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity() {
 
                         lifecycleScope.launch {
                             db.alarmDao().addAlarm(
-                                AlarmEntity(requestCode, hour, minute, day, month, year, message)
+                                AlarmEntity(requestCode, minute, hour, day, month, year, message)
                             )
                         }
                     } else {
@@ -242,7 +242,7 @@ class MainActivity : AppCompatActivity() {
 
                     lifecycleScope.launch {
                         db.alarmDao().addAlarm(
-                            AlarmEntity(requestCode, hour, minute, day, month, year, message)
+                            AlarmEntity(requestCode, minute, hour, day, month, year, message)
                         )
                     }
                 }

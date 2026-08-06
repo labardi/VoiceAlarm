@@ -51,6 +51,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tvMessage"
         app:layout_constraintEnd_toEndOf="parent"
+        android:paddingStart="8dp"
          />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
