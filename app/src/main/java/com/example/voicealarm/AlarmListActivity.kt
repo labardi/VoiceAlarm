@@ -25,8 +25,7 @@ class AlarmListActivity : AppCompatActivity() {
         val db = AlarmDatabase.getDatabase(this)
 
         val backButton = findViewById<android.widget.ImageButton>(R.id.btnBack)
-        backButton.setOnClickListener { val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent) }
+        backButton.setOnClickListener { finish() }
 
         val myAdapter = AlarmAdapter()
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)

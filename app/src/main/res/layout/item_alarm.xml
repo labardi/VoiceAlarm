@@ -12,7 +12,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tvDate"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="17:30"
+        tools:text="17:30"
         android:textSize="32sp"
         android:paddingStart="12dp"
         />
@@ -22,36 +22,59 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/tvTime"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/itemDivider"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/tvMessage"
-        android:text="05.08.2026"
+        tools:text="05.08.2026"
         android:textSize="18sp"
         android:paddingStart="12dp"
         />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/alarmInfoEndBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="tvTime,tvDate" />
 
     <TextView
         android:id="@+id/tvMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvDate"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/itemDivider"
+        app:layout_constraintStart_toEndOf="@id/alarmInfoEndBarrier"
         app:layout_constraintEnd_toStartOf="@+id/switchAlarm"
-        android:text="позвонить в ноттердам, после чего поехать в обнинск"
+        tools:text="Позвонить доктору"
         android:textSize="14sp"
-        android:paddingStart="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
         />
 
     <Switch
         android:id="@+id/switchAlarm"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/itemDivider"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tvMessage"
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingStart="8dp"
+        android:checked="true"
+        android:enabled="false"
          />
+
+    <View
+        android:id="@+id/itemDivider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:background="?attr/colorOutlineVariant"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

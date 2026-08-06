@@ -11,40 +11,39 @@
         android:id="@+id/tvDateTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="21:00  30.07.2026"
+        tools:text="21:00  30.07.2026"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.1"
-        android:textSize="34sp"/>
+        android:layout_marginTop="48dp"
+        android:textSize="48sp"/>
 
     <TextView
         android:id="@+id/tvMessage"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Позвонить доктору Уотсону иначе всем ценок валвалыодлоаывадоывдаоыдлвоаыдловадылвоадло"
-        app:layout_constraintTop_toBottomOf="@+id/tvDateTime"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="22sp"
-        android:gravity="center"
+        android:layout_height="0dp"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginTop="0dp"
-        app:layout_constraintVertical_bias="0.15"/>
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        tools:text="позвонить доктору"
+        android:textSize="24sp"
+
+        app:layout_constraintTop_toBottomOf="@id/tvDateTime"
+        app:layout_constraintBottom_toTopOf="@id/btnDismiss"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnDismiss"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="128dp"
         android:src="@drawable/baseline_close_24"
         android:contentDescription="@string/DismissAlarm"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvMessage"
-        android:layout_marginTop="68dp"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
