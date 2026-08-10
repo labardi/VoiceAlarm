@@ -14,7 +14,7 @@ data class ParsedCommand(
 
 
 
-fun parseVoiceCommand(text: String): ParsedCommand {
+fun parseVoiceCommand(text: String, now: LocalDateTime = LocalDateTime.now() ): ParsedCommand {
     val numberMap = mapOf(
         // Количественные (для времени: часы, минуты)
         "ноль" to 0,
@@ -92,16 +92,12 @@ fun parseVoiceCommand(text: String): ParsedCommand {
         "ноября" to 11,
         "декабря" to 12
     )
-
-
     var errorMessage = ""
     var alarmMessage = ""
     var day = 0
     var hour = 0
     var minute = 0
     var month = 0
-
-    val now = LocalDateTime.now()
 
     val currentYear = now.year
     val currentMonth = now.monthValue
@@ -255,6 +251,8 @@ fun parseVoiceCommand(text: String): ParsedCommand {
     } else {
         errorMessage = "Некорректный ввод"
     }
-
+    if  (errorMessage != "") {
+        return ParsedCommand(alarmDay = 0, alarmMonth = 0, alarmYear = 0, alarmHour = 0, alarmMinute = 0, message = "", error = errorMessage)
+    }
     return ParsedCommand(alarmDay = day, alarmMonth = month, alarmYear = year, alarmHour = hour, alarmMinute = minute, message = alarmMessage, error = errorMessage)
 }
