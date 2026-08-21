@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AlarmDao {
     @Insert
-    suspend fun addAlarm(alarm: AlarmEntity)
+    suspend fun addAlarm(alarm: AlarmEntity): Long
 
     @Delete
     suspend fun deleteAlarm(alarm: AlarmEntity)

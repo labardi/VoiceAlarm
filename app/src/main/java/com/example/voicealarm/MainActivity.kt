@@ -173,82 +173,39 @@ class MainActivity : AppCompatActivity() {
                 editText.text = error
                 editText.visibility = android.view.View.VISIBLE
             } else {
-                val calendar = Calendar.getInstance().apply {
-                    set(Calendar.YEAR, year)
-                    set(Calendar.MONTH, month - 1) // ← важно! В Calendar январь = 0
-                    set(Calendar.DAY_OF_MONTH, day)
-                    set(Calendar.HOUR_OF_DAY, hour)
-                    set(Calendar.MINUTE, minute)
-                    set(Calendar.SECOND, 0)
-                }
-                val triggerTimeMillis = calendar.timeInMillis
 
-                val requestCode = triggerTimeMillis.toInt()
-                val intent = Intent(this, AlarmReceiver ::class.java).apply {
-                    putExtra("message", message)
-                    putExtra("minute", minute)
-                    putExtra("hour", hour)
-                    putExtra("day", day)
-                    putExtra("month", month)
-                    putExtra("year", year)
-                    putExtra("requestCode", requestCode)
-                }
-                val pendingIntent = PendingIntent.getBroadcast(this, requestCode, intent,
-                    PendingIntent.FLAG_IMMUTABLE)
+                if (ensureExactAlarmPermission(this)) {
+                    val draftAlarm = AlarmEntity(
+                        minute = minute,
+                        hour = hour,
+                        day = day,
+                        month = month,
+                        year = year,
+                        message = message
+                    )
 
-                val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    lifecycleScope.launch {
+                        val generatedId = db.alarmDao().addAlarm(draftAlarm)
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    if (alarmManager.canScheduleExactAlarms()) {
-                        alarmManager.setAlarmClock(
-                            AlarmManager.AlarmClockInfo(triggerTimeMillis, pendingIntent),
-                            pendingIntent
+                        val savedAlarm = draftAlarm.copy(
+                            requestCode = generatedId.toInt()
                         )
-                        editText.text = "Будильник на ${"%02d".format(hour)}:${"%02d".format(minute)} на ${
-                            "%02d".format(day)}.${"%02d".format(month)}.${"%02d".format(year)} с сообщением: $message поставлен!"
+
+                        scheduleAlarm(this@MainActivity, savedAlarm)
+
+                        editText.text =
+                            "Будильник на ${"%02d".format(hour)}:${"%02d".format(minute)} на ${
+                                "%02d".format(day)
+                            }.${"%02d".format(month)}.${"%02d".format(year)} с сообщением: $message поставлен!"
                         editText.visibility = android.view.View.VISIBLE
                         resultText.setText("Модель готова! Можно говорить.")
                         confirmButton.visibility = android.view.View.GONE
                         resultText.isEnabled = false
                         recordButton.text = getString(R.string.startRecording)
-
-                        lifecycleScope.launch {
-                            db.alarmDao().addAlarm(
-                                AlarmEntity(requestCode, minute, hour, day, month, year, message)
-                            )
-                        }
-                    } else {
-                        // просим разрешение
-                        Toast.makeText(
-                            this,
-                            "Для точных будильников нужно разрешение",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                        startActivity(intent)
-                    }
-                } else {
-                    alarmManager.setAlarmClock(
-                        AlarmManager.AlarmClockInfo(triggerTimeMillis, pendingIntent),
-                        pendingIntent
-                    ) // на старых Android просто ставим
-                    editText.text = "Будильник на ${"%02d".format(hour)}:${"%02d".format(minute)} на ${
-                        "%02d".format(day)}.${"%02d".format(month)}.${"%02d".format(year)} с сообщением: $message поставлен!"
-                    editText.visibility = android.view.View.VISIBLE
-                    resultText.setText("Модель готова! Можно говорить.")
-                    confirmButton.visibility = android.view.View.GONE
-                    resultText.isEnabled = false
-                    recordButton.text = getString(R.string.startRecording)
-
-                    lifecycleScope.launch {
-                        db.alarmDao().addAlarm(
-                            AlarmEntity(requestCode, minute, hour, day, month, year, message)
-                        )
                     }
                 }
             }
         }
-
         accumulatedText = ""
         confirmButton.visibility = android.view.View.GONE
         editText.visibility = android.view.View.GONE
@@ -256,19 +213,19 @@ class MainActivity : AppCompatActivity() {
 
         // Распаковываем модель из папки assets
         org.vosk.android.StorageService.unpack(
-            this,
-            "vosk-model-small-ru-0.22",
-            "model",
-            // Коллбэк для успеха (completeCallback)
-            { model ->
-                this.model = model
-                resultText.setText("Модель готова! Можно говорить.")
-                recordButton.isEnabled = true
-            },
-            // Коллбэк для ошибки (errorCallback)
-            { exception ->
-                resultText.setText("Ошибка загрузки модели: ${exception.message}")
-            }
+        this,
+        "vosk-model-small-ru-0.22",
+        "model",
+        // Коллбэк для успеха (completeCallback)
+        { model ->
+            this.model = model
+            resultText.setText("Модель готова! Можно говорить.")
+            recordButton.isEnabled = true
+        },
+        // Коллбэк для ошибки (errorCallback)
+        { exception ->
+            resultText.setText("Ошибка загрузки модели: ${exception.message}")
+        }
         )
     }
 }
