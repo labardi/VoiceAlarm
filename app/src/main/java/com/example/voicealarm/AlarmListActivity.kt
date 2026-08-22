@@ -27,7 +27,26 @@ class AlarmListActivity : AppCompatActivity() {
         val backButton = findViewById<android.widget.ImageButton>(R.id.btnBack)
         backButton.setOnClickListener { finish() }
 
-        val myAdapter = AlarmAdapter()
+        fun onSwitchClick(alarm: AlarmEntity): Unit {
+            val newState = !alarm.isActive
+            if (!newState) {
+                cancelAlarm(this, alarm)
+                val updatedAlarm = alarm.copy(isActive = newState)
+                lifecycleScope.launch {
+                    db.alarmDao().updateAlarm(updatedAlarm)
+                }
+            } else {
+                if (ensureExactAlarmPermission(this)) {
+                    scheduleAlarm(this, alarm)
+                    val updatedAlarm = alarm.copy(isActive = newState)
+                    lifecycleScope.launch {
+                        db.alarmDao().updateAlarm(updatedAlarm)
+                    }
+                }
+            }
+        }
+
+        val myAdapter = AlarmAdapter(onSwitchClick = ::onSwitchClick)
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = myAdapter

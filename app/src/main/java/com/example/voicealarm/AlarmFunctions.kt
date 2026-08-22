@@ -66,6 +66,20 @@ fun scheduleAlarm(context: Context, alarm: AlarmEntity): Unit {
     )
 }
 
+fun cancelAlarm(context: Context, alarm: AlarmEntity): Unit {
+
+    val alarmManager = context.getSystemService(AlarmManager::class.java)
+
+    val intent = Intent(context, AlarmReceiver ::class.java)
+
+    val pendingIntent = PendingIntent.getBroadcast(context, alarm.requestCode, intent,
+        PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
+
+    if (pendingIntent != null) {
+        alarmManager.cancel(pendingIntent)
+    }
+}
+
 
 
 

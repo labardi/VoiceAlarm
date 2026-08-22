@@ -2,12 +2,13 @@ package com.example.voicealarm
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Switch
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-class AlarmAdapter :
+class AlarmAdapter(private val onSwitchClick: (AlarmEntity) -> Unit) :
     ListAdapter<AlarmEntity, AlarmAdapter.AlarmViewHolder>(AlarmDiffCallback()) {
 
     class AlarmViewHolder(itemView: View) :
@@ -15,9 +16,10 @@ class AlarmAdapter :
         val timeText: TextView = itemView.findViewById(R.id.tvTime)
         val dateText: TextView = itemView.findViewById(R.id.tvDate)
         val messageText: TextView = itemView.findViewById(R.id.tvMessage)
+        val switchButton: Switch = itemView.findViewById(R.id.btnSwitch)
     }
 
-    override fun onCreateViewHolder( parent: ViewGroup, viewType: Int): AlarmViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlarmViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_alarm, parent, false)
 
@@ -41,6 +43,13 @@ class AlarmAdapter :
             )
 
         holder.messageText.text = alarm.message
+
+        holder.switchButton.isChecked = alarm.isActive
+
+        holder.switchButton.setOnClickListener {
+            onSwitchClick(alarm)
+            holder.switchButton.isChecked = alarm.isActive
+        }
     }
 
 }
