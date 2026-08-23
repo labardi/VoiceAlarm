@@ -59,6 +59,13 @@ class AlarmListActivity : AppCompatActivity() {
         recyclerView.adapter = myAdapter
 
         lifecycleScope.launch {
+            val alarms = db.alarmDao().getAlarmsOnce()
+            for (oneAlarm in alarms) {
+                if (!isAlarmInFuture(oneAlarm)) {
+                    cancelAlarm(this@AlarmListActivity, oneAlarm)
+                    db.alarmDao().deleteAlarm(oneAlarm)
+                }
+            }
             db.alarmDao().getAlarms().collect { updatedAlarms ->
                 myAdapter.submitList(updatedAlarms)
             }
