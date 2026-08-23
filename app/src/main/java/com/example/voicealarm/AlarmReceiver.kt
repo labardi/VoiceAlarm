@@ -8,6 +8,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -38,6 +41,18 @@ class AlarmReceiver : BroadcastReceiver() {
             putExtra("year", intent.getIntExtra("year", 0))
         }
         val requestCode = intent.getIntExtra("requestCode", 0)
+
+        val db = AlarmDatabase.getDatabase(context.applicationContext)
+
+        val pendingResult = goAsync()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                db.alarmDao().deleteAlarmByRequestCode(requestCode)
+            } finally {
+                pendingResult.finish()
+            }
+        }
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
             context, requestCode, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE
