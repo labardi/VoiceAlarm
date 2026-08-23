@@ -9,7 +9,7 @@ import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
 import java.util.Calendar
-
+import java.time.LocalDateTime
 
 fun hasExactAlarmPermission(context: Context): Boolean {
     val alarmManager = context.getSystemService(AlarmManager::class.java)
@@ -78,6 +78,17 @@ fun cancelAlarm(context: Context, alarm: AlarmEntity): Unit {
     if (pendingIntent != null) {
         alarmManager.cancel(pendingIntent)
     }
+}
+
+fun isAlarmInFuture(alarm: AlarmEntity): Boolean {
+    val deadline = LocalDateTime.of(
+        alarm.year,
+        alarm.month,
+        alarm.day,
+        alarm.hour,
+        alarm.minute
+    )
+    return deadline.isAfter(LocalDateTime.now())
 }
 
 

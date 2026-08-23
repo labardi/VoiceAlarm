@@ -29,19 +29,26 @@ class AlarmListActivity : AppCompatActivity() {
 
         fun onSwitchClick(alarm: AlarmEntity): Unit {
             val newState = !alarm.isActive
-            if (!newState) {
-                cancelAlarm(this, alarm)
-                val updatedAlarm = alarm.copy(isActive = newState)
-                lifecycleScope.launch {
-                    db.alarmDao().updateAlarm(updatedAlarm)
-                }
-            } else {
-                if (ensureExactAlarmPermission(this)) {
-                    scheduleAlarm(this, alarm)
+            if (isAlarmInFuture(alarm)) {
+                if (!newState) {
+                    cancelAlarm(this, alarm)
                     val updatedAlarm = alarm.copy(isActive = newState)
                     lifecycleScope.launch {
                         db.alarmDao().updateAlarm(updatedAlarm)
                     }
+                } else {
+                    if (ensureExactAlarmPermission(this)) {
+                        scheduleAlarm(this, alarm)
+                        val updatedAlarm = alarm.copy(isActive = newState)
+                        lifecycleScope.launch {
+                            db.alarmDao().updateAlarm(updatedAlarm)
+                        }
+                    }
+                }
+            } else {
+                cancelAlarm(this, alarm)
+                lifecycleScope.launch {
+                    db.alarmDao().deleteAlarm(alarm)
                 }
             }
         }
