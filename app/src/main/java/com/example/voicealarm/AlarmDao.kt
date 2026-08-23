@@ -23,4 +23,7 @@ interface AlarmDao {
 
     @Query("SELECT * FROM alarms ORDER BY year, month, day, hour, minute")
     fun getAlarms(): Flow<List<AlarmEntity>>
+
+    @Query("SELECT * FROM alarms ORDER BY year, month, day, hour, minute")
+    suspend fun getAlarmsOnce(): List<AlarmEntity>
 }
