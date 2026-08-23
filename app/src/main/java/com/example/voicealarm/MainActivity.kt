@@ -1,24 +1,21 @@
 package com.example.voicealarm
 
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import android.app.AlarmManager
 import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import java.util.Calendar
 import android.Manifest
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         val alarmListButton = findViewById<android.widget.Button>(R.id.btnAlarmsList)
         val resultText = findViewById<android.widget.EditText>(R.id.tvResult)
         val editText = findViewById<android.widget.TextView>(R.id.tvEdit)
+        val inputHelpButton = findViewById<android.widget.ImageButton>(R.id.btnInputHelp)
 
         // Изначально выключим кнопку, пока модель не загрузится (в шаге 2 мы ее включим)
         recordButton.isEnabled = false
@@ -137,6 +135,14 @@ class MainActivity : AppCompatActivity() {
         alarmListButton.setOnClickListener {
             val intent = Intent(this, AlarmListActivity::class.java)
             startActivity(intent)
+        }
+
+        inputHelpButton.setOnClickListener {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.input_help_title)
+                .setMessage(R.string.input_help_message)
+                .setPositiveButton(R.string.understood, null)
+                .show()
         }
 
         confirmButton.setOnClickListener {

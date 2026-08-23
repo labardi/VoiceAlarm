@@ -7,4 +7,8 @@
     <string name="DismissAlarm">Выключить будильник</string>
     <string name="AlarmListButton">Будильники</string>
     <string name="alarm_list_back_button">Назад</string>
+    <string name="input_help_button_description">Показать формат команды</string>
+    <string name="input_help_title">Как создать будильник</string>
+    <string name="input_help_message">Формат:\nНапомни [число] [месяц] [необязательный год] в [час] часов [минуты] минут (минуты тоже опциональны) сообщение [текст напоминания]\n\nПримеры:\nНапомни десятого сентября в девять часов тридцать минут сообщение позвонить врачу\n\nНапомни двадцать пятого октября в двадцать один час сообщение сдать отчёт</string>
+    <string name="understood">Понятно</string>
 </resources>
