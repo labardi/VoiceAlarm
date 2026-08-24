@@ -63,6 +63,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .setContentTitle("Будильник")
             .setFullScreenIntent(fullScreenPendingIntent, true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
             .build()
 
         notificationManager.notify(requestCode , notification)
