@@ -59,7 +59,7 @@ class AlarmReceiver : BroadcastReceiver() {
         )
 
         val notification = NotificationCompat.Builder(context, "alarm_channel")
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setSmallIcon(R.drawable.ic_notification_alarm)
             .setContentTitle("Будильник")
             .setFullScreenIntent(fullScreenPendingIntent, true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
