@@ -32,6 +32,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        val versionText = findViewById<android.widget.TextView>(R.id.tvVersion)
+        versionText.text = getString(R.string.app_version, BuildConfig.VERSION_NAME)
         db = AlarmDatabase.getDatabase(this)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
