@@ -24,7 +24,7 @@ class AlarmListActivity : AppCompatActivity() {
         }
         val db = AlarmDatabase.getDatabase(this)
 
-        val backButton = findViewById<android.widget.ImageButton>(R.id.btnBack)
+        val backButton = findViewById<android.widget.Button>(R.id.btnBack)
         backButton.setOnClickListener { finish() }
 
         fun onSwitchClick(alarm: AlarmEntity): Unit {
