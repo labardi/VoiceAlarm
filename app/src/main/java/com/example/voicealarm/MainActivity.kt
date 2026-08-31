@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         val recordButton = findViewById<android.widget.Button>(R.id.btnRecord)
         val confirmButton = findViewById<android.widget.Button>(R.id.btnConfirm)
         val alarmListButton = findViewById<android.widget.Button>(R.id.btnAlarmsList)
+        val manualCreateButton = findViewById<android.widget.Button>(R.id.btnCreateManually)
         val resultText = findViewById<android.widget.EditText>(R.id.tvResult)
         val editText = findViewById<android.widget.TextView>(R.id.tvEdit)
         val inputHelpButton = findViewById<android.widget.ImageButton>(R.id.btnInputHelp)
@@ -97,6 +98,7 @@ class MainActivity : AppCompatActivity() {
 
                     accumulatedText = ""
 
+                    manualCreateButton.visibility = android.view.View.GONE
                     editText.visibility = android.view.View.GONE
                     editText.text = getString(R.string.editAccess)
                     confirmButton.visibility = android.view.View.GONE
@@ -136,6 +138,11 @@ class MainActivity : AppCompatActivity() {
 
         alarmListButton.setOnClickListener {
             val intent = Intent(this, AlarmListActivity::class.java)
+            startActivity(intent)
+        }
+
+        manualCreateButton.setOnClickListener {
+            val intent = Intent(this, AlarmEditActivity::class.java)
             startActivity(intent)
         }
 
@@ -210,6 +217,7 @@ class MainActivity : AppCompatActivity() {
                         confirmButton.visibility = android.view.View.GONE
                         resultText.isEnabled = false
                         recordButton.text = getString(R.string.startRecording)
+                        manualCreateButton.visibility = android.view.View.VISIBLE
                     }
                 }
             }

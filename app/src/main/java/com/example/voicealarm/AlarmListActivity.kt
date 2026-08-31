@@ -53,7 +53,17 @@ class AlarmListActivity : AppCompatActivity() {
             }
         }
 
-        val myAdapter = AlarmAdapter(onSwitchClick = ::onSwitchClick)
+        fun onAlarmClick(alarm: AlarmEntity) {
+            val intent = Intent(this, AlarmEditActivity::class.java).apply {
+                putExtra(AlarmEditActivity.EXTRA_ALARM_REQUEST_CODE, alarm.requestCode)
+            }
+            startActivity(intent)
+        }
+
+        val myAdapter = AlarmAdapter(
+            onSwitchClick = ::onSwitchClick,
+            onAlarmClick = ::onAlarmClick
+        )
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = myAdapter

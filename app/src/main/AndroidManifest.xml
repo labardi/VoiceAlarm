@@ -42,6 +42,10 @@
             android:name=".AlarmListActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".AlarmEditActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <receiver
             android:name=".BootReceiver"

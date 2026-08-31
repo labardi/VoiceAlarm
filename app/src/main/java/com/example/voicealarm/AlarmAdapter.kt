@@ -8,7 +8,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-class AlarmAdapter(private val onSwitchClick: (AlarmEntity) -> Unit) :
+class AlarmAdapter(
+    private val onSwitchClick: (AlarmEntity) -> Unit,
+    private val onAlarmClick: (AlarmEntity) -> Unit
+) :
     ListAdapter<AlarmEntity, AlarmAdapter.AlarmViewHolder>(AlarmDiffCallback()) {
 
     class AlarmViewHolder(itemView: View) :
@@ -49,6 +52,10 @@ class AlarmAdapter(private val onSwitchClick: (AlarmEntity) -> Unit) :
         holder.switchButton.setOnClickListener {
             onSwitchClick(alarm)
             holder.switchButton.isChecked = alarm.isActive
+        }
+
+        holder.itemView.setOnClickListener {
+            onAlarmClick(alarm)
         }
     }
 
