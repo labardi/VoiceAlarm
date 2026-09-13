@@ -8,15 +8,26 @@
     tools:context=".AlarmActivity">
 
     <TextView
-        android:id="@+id/tvDateTime"
+        android:id="@+id/tvTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="21:00  30.07.2026"
+        tools:text="21:00"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="48dp"
-        android:textSize="48sp"/>
+        android:textSize="72sp"/>
+
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="24sp"
+        tools:text="30.07.2026"
+        app:layout_constraintTop_toBottomOf="@id/tvTime"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <TextView
         android:id="@+id/tvMessage"
@@ -30,7 +41,7 @@
         tools:text="позвонить доктору"
         android:textSize="24sp"
 
-        app:layout_constraintTop_toBottomOf="@id/tvDateTime"
+        app:layout_constraintTop_toBottomOf="@id/tvDate"
         app:layout_constraintBottom_toTopOf="@id/btnDismiss"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -42,6 +53,8 @@
         android:layout_marginBottom="128dp"
         android:src="@drawable/baseline_close_24"
         android:contentDescription="@string/DismissAlarm"
+        app:fabCustomSize="72dp"
+        app:maxImageSize="32dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />

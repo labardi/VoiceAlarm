@@ -88,9 +88,10 @@ class AlarmActivity : AppCompatActivity() {
         val year = intent.getIntExtra("year", 0)
 
 
-        val timeDateText = findViewById<android.widget.TextView>(R.id.tvDateTime)
-        timeDateText.text = "${"%02d".format(hour)}:${"%02d".format(minute)} ${
-            "%02d".format(day)}.${"%02d".format(month)}.${"%02d".format(year)}"
+        val timeText = findViewById<android.widget.TextView>(R.id.tvTime)
+        timeText.text = "%02d:%02d".format(hour, minute)
+        val dateText = findViewById<android.widget.TextView>(R.id.tvDate)
+        dateText.text = "%02d.%02d.%04d".format(day, month, year)
 
         val messageText = findViewById<android.widget.TextView>(R.id.tvMessage)
         messageText.text = message
