@@ -30,7 +30,9 @@ class AlarmReceiver : BroadcastReceiver() {
         val notificationManager = context.getSystemService(NotificationManager::class.java)
         notificationManager.createNotificationChannel(channel)
 
+        val requestCode = intent.getIntExtra("requestCode", 0)
         val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
+            action = AlarmActivity.ACTION_RING_ALARM
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             // сюда передаём extras из входящего intent
             putExtra("message", intent.getStringExtra("message"))
@@ -39,8 +41,8 @@ class AlarmReceiver : BroadcastReceiver() {
             putExtra("day", intent.getIntExtra("day", 0))
             putExtra("month", intent.getIntExtra("month", 0))
             putExtra("year", intent.getIntExtra("year", 0))
+            putExtra(AlarmActivity.EXTRA_NOTIFICATION_ID, requestCode)
         }
-        val requestCode = intent.getIntExtra("requestCode", 0)
 
         val db = AlarmDatabase.getDatabase(context.applicationContext)
 
@@ -55,29 +57,46 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
-            context, requestCode, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE
+            context,
+            requestCode,
+            fullScreenIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+
+        val notificationTapIntent = Intent(fullScreenIntent).apply {
+            action = AlarmActivity.ACTION_OPEN_SILENT_ALARM
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            putExtra(AlarmActivity.EXTRA_SILENT, true)
+        }
+        val notificationTapPendingIntent = PendingIntent.getActivity(
+            context,
+            requestCode,
+            notificationTapIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val message = intent.getStringExtra("message").orEmpty()
+        val notificationMessage = if (message.length > MAX_NOTIFICATION_MESSAGE_LENGTH) {
+            message.take(MAX_NOTIFICATION_MESSAGE_LENGTH) + "…"
+        } else {
+            message
+        }
 
         val notification = NotificationCompat.Builder(context, "alarm_channel")
             .setSmallIcon(R.drawable.ic_notification_alarm)
             .setContentTitle("Будильник")
+            .setContentText(notificationMessage)
+            .setContentIntent(notificationTapPendingIntent)
+            .setAutoCancel(true)
             .setFullScreenIntent(fullScreenPendingIntent, true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .build()
 
         notificationManager.notify(requestCode , notification)
+    }
 
-
-        val alarmIntent = Intent(context, AlarmActivity::class.java).apply {
-            putExtra("message", intent.getStringExtra("message"))
-            putExtra("minute", intent.getIntExtra("minute", 0))
-            putExtra("hour", intent.getIntExtra("hour", 0))
-            putExtra("day", intent.getIntExtra("day", 0))
-            putExtra("month", intent.getIntExtra("month", 0))
-            putExtra("year", intent.getIntExtra("year", 0))
-        }
-        alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(alarmIntent)
+    private companion object {
+        const val MAX_NOTIFICATION_MESSAGE_LENGTH = 40
     }
 }

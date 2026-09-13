@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.app.NotificationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -19,6 +20,14 @@ import androidx.core.view.WindowInsetsCompat
 import kotlin.text.format
 
 class AlarmActivity : AppCompatActivity() {
+
+    companion object {
+        const val ACTION_RING_ALARM = "com.example.voicealarm.action.RING_ALARM"
+        const val ACTION_OPEN_SILENT_ALARM = "com.example.voicealarm.action.OPEN_SILENT_ALARM"
+        const val EXTRA_SILENT = "silent"
+        const val EXTRA_NOTIFICATION_ID = "notification_id"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -38,47 +47,58 @@ class AlarmActivity : AppCompatActivity() {
             insets
         }
 
-        val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-
-        val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        audioManager.setStreamVolume(
-            AudioManager.STREAM_ALARM,
-            audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM),
-            0
-        )
-
-        val mediaPlayer = MediaPlayer().apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ALARM)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build()
-            )
-            setDataSource(this@AlarmActivity, alarmUri)
-            isLooping = true
-            setVolume(0.1f, 0.1f)
-            prepare()
-            start()
-        }
-        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val pattern = longArrayOf(0, 500, 1000) // пауза, вибрация, пауза между повторами
-            vibrator.vibrate(VibrationEffect.createWaveform(pattern, 0))
-        }
-        var volume = 0.1f
         val handler = Handler(Looper.getMainLooper())
+        var mediaPlayer: MediaPlayer? = null
+        var vibrator: Vibrator? = null
+        var volumeRunnable: Runnable? = null
+        val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        val isSilent = intent.getBooleanExtra(EXTRA_SILENT, false)
 
-        val volumeRunnable = object : Runnable {
-            override fun run() {
-                if (volume < 1.0f) {
-                    volume = (volume + 0.05f).coerceAtMost(1.0f)
-                    mediaPlayer.setVolume(volume, volume)
-                    handler.postDelayed(this, 2000) // каждые 2 секунды
+        if (isSilent) {
+            if (notificationId != -1) {
+                notificationManager.cancel(notificationId)
+            }
+        } else {
+            val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+
+            val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            audioManager.setStreamVolume(
+                AudioManager.STREAM_ALARM,
+                audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM),
+                0
+            )
+
+            mediaPlayer = MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build()
+                )
+                setDataSource(this@AlarmActivity, alarmUri)
+                isLooping = true
+                setVolume(0.1f, 0.1f)
+                prepare()
+                start()
+            }
+            vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+            val pattern = longArrayOf(0, 500, 1000)
+            vibrator.vibrate(VibrationEffect.createWaveform(pattern, 0))
+
+            var volume = 0.1f
+            volumeRunnable = object : Runnable {
+                override fun run() {
+                    if (volume < 1.0f) {
+                        volume = (volume + 0.05f).coerceAtMost(1.0f)
+                        mediaPlayer?.setVolume(volume, volume)
+                        handler.postDelayed(this, 2000)
+                    }
                 }
             }
+            handler.postDelayed(volumeRunnable, 2000)
         }
-        handler.postDelayed(volumeRunnable, 2000)
 
         val message = intent.getStringExtra("message")
         val hour = intent.getIntExtra("hour", 0)
@@ -98,11 +118,18 @@ class AlarmActivity : AppCompatActivity() {
         val dismissButton = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnDismiss)
 
         dismissButton.setOnClickListener {
-            handler.removeCallbacks(volumeRunnable)
-            mediaPlayer.stop()
-            mediaPlayer.release()
-            vibrator.cancel()
-            finish()
+            volumeRunnable?.let(handler::removeCallbacks)
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            vibrator?.cancel()
+            if (notificationId != -1) {
+                notificationManager.cancel(notificationId)
+            }
+            if (isSilent) {
+                finishAndRemoveTask()
+            } else {
+                finish()
+            }
         }
 
     }

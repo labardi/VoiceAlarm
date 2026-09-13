@@ -23,6 +23,8 @@
     <string name="invalid_alarm_date_time">Указаны некорректные дата или время</string>
     <string name="alarm_must_be_in_future">Будильник должен быть установлен на будущее</string>
     <string name="allow_notifications_to_save_alarm">Разрешите уведомления и повторите сохранение</string>
+    <string name="allow_exact_alarms">Разрешите VoiceAlarm устанавливать точные будильники</string>
+    <string name="allow_full_screen_alarms">Разрешите VoiceAlarm показывать будильник на весь экран</string>
     <string name="alarm_save_error">Не удалось сохранить будильник: %1$s</string>
     <string name="alarm_delete_error">Не удалось удалить будильник: %1$s</string>
     <string name="alarm_time_format">%1$02d:%2$02d</string>

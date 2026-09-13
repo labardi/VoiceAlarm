@@ -1,20 +1,15 @@
 package com.example.voicealarm
 
-import android.Manifest
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -214,7 +209,7 @@ class AlarmEditActivity : AppCompatActivity() {
 
         val currentAlarm = editedAlarm
         val willBeActive = currentAlarm?.isActive ?: true
-        if (willBeActive && !ensureAlarmPermissions()) return
+        if (willBeActive && !ensureAlarmPermissions(this)) return
 
         val alarm = AlarmEntity(
             requestCode = currentAlarm?.requestCode ?: 0,
@@ -252,24 +247,4 @@ class AlarmEditActivity : AppCompatActivity() {
         }
     }
 
-    private fun ensureAlarmPermissions(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
-            PackageManager.PERMISSION_GRANTED
-        ) {
-            Toast.makeText(
-                this,
-                R.string.allow_notifications_to_save_alarm,
-                Toast.LENGTH_LONG
-            ).show()
-            startActivity(
-                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = android.net.Uri.fromParts("package", packageName, null)
-                }
-            )
-            return false
-        }
-
-        return ensureExactAlarmPermission(this)
-    }
 }

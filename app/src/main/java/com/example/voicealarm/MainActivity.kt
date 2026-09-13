@@ -6,18 +6,37 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import android.content.pm.PackageManager
 import android.os.Build
-import android.provider.Settings
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import android.Manifest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {
+
+    private var notificationPermissionRequestedAtStartup = false
+    private var exactAlarmPermissionRequestedAtStartup = false
+    private var fullScreenPermissionRequestedAtStartup = false
+
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        requestNextStartupAlarmPermission()
+    }
+
+    private val exactAlarmPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        requestNextStartupAlarmPermission()
+    }
+
+    private val fullScreenPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        requestNextStartupAlarmPermission()
+    }
 
     // Переменная для самой языковой модели (словари)
     private var model: org.vosk.Model? = null
@@ -54,18 +73,7 @@ class MainActivity : AppCompatActivity() {
         // Изначально выключим кнопку, пока модель не загрузится (в шаге 2 мы ее включим)
         recordButton.isEnabled = false
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val permission = ContextCompat.checkSelfPermission(
-                this, Manifest.permission.POST_NOTIFICATIONS
-            )
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    2
-                )
-            }
-        }
+        requestNextStartupAlarmPermission()
 
         recordButton.setOnClickListener {
             // Проверяем права
@@ -156,23 +164,6 @@ class MainActivity : AppCompatActivity() {
 
         confirmButton.setOnClickListener {
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                val notifPermission = ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.POST_NOTIFICATIONS
-                )
-                if (notifPermission != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(
-                        this,
-                        "Без разрешения на уведомления будильник не сработает",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    intent.data = android.net.Uri.fromParts("package", packageName, null)
-                    startActivity(intent)
-                    return@setOnClickListener // выходим, не ставим будильник
-                }
-            }
-
             val finalText = resultText.text.toString()
 
             val result = parseVoiceCommand(finalText)
@@ -189,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                 editText.visibility = android.view.View.VISIBLE
             } else {
 
-                if (ensureExactAlarmPermission(this)) {
+                if (ensureAlarmPermissions(this)) {
                     val draftAlarm = AlarmEntity(
                         minute = minute,
                         hour = hour,
@@ -243,5 +234,33 @@ class MainActivity : AppCompatActivity() {
             resultText.setText("Ошибка загрузки модели: ${exception.message}")
         }
         )
+    }
+
+    private fun requestNextStartupAlarmPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !hasNotificationPermission(this) &&
+            !notificationPermissionRequestedAtStartup
+        ) {
+            notificationPermissionRequestedAtStartup = true
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            return
+        }
+
+        if (!hasExactAlarmPermission(this) && !exactAlarmPermissionRequestedAtStartup) {
+            exactAlarmPermissionRequestedAtStartup = true
+            Toast.makeText(
+                this,
+                R.string.allow_exact_alarms,
+                Toast.LENGTH_LONG
+            ).show()
+            exactAlarmPermissionLauncher.launch(exactAlarmPermissionIntent(this))
+            return
+        }
+
+        if (!hasFullScreenIntentPermission(this) && !fullScreenPermissionRequestedAtStartup) {
+            fullScreenPermissionRequestedAtStartup = true
+            Toast.makeText(this, R.string.allow_full_screen_alarms, Toast.LENGTH_LONG).show()
+            fullScreenPermissionLauncher.launch(fullScreenIntentPermissionIntent(this))
+        }
     }
 }

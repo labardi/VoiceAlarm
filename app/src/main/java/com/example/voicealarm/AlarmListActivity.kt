@@ -37,7 +37,7 @@ class AlarmListActivity : AppCompatActivity() {
                         db.alarmDao().updateAlarm(updatedAlarm)
                     }
                 } else {
-                    if (ensureExactAlarmPermission(this)) {
+                    if (ensureAlarmPermissions(this)) {
                         scheduleAlarm(this, alarm)
                         val updatedAlarm = alarm.copy(isActive = newState)
                         lifecycleScope.launch {
